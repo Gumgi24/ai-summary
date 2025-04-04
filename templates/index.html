@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h2 class="animate-title">Résumez les vidéos YouTube en un instant</h2>
+    <p class="animate-subtitle">Obtenez rapidement l'essentiel de n'importe quelle vidéo YouTube en français</p>
+</div>
+
+<div class="form-container">
+    <form action="{{ url_for('resume') }}" method="post" class="animate-form">
+        <div class="form-group">
+            <label for="youtube_url">
+                <i class="fab fa-youtube"></i> URL de la vidéo YouTube
+            </label>
+            <input type="text" id="youtube_url" name="youtube_url" pattern="^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}.*$" placeholder="https://www.youtube.com/watch?v=..." required>
+            <span class="error-message">Veuillez entrer une URL YouTube valide</span>
+        </div>
+        
+        <div class="form-group">
+            <label>Type de résumé</label>
+            <div class="radio-options">
+                <div class="radio-option">
+                    <input type="radio" id="detailed" name="summary_type" value="detailed" checked>
+                    <label for="detailed">
+                        <div class="option-icon"><i class="fas fa-paragraph"></i></div>
+                        <div class="option-text">
+                            <span class="option-title">Résumé détaillé</span>
+                            <span class="option-desc">Un paragraphe complet résumant la vidéo</span>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="radio-option">
+                    <input type="radio" id="bullet" name="summary_type" value="bullet">
+                    <label for="bullet">
+                        <div class="option-icon"><i class="fas fa-list-ul"></i></div>
+                        <div class="option-text">
+                            <span class="option-title">Points clés</span>
+                            <span class="option-desc">Les points essentiels en format liste</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <button type="submit" class="submit-btn">
+            <span class="btn-text">Résumer</span>
+            <i class="fas fa-magic btn-icon"></i>
+            <div class="btn-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+        </button>
+    </form>
+</div>
+
+<div class="how-it-works">
+    <h3>Comment ça marche</h3>
+    <div class="steps">
+        <div class="step animate-step">
+            <div class="step-icon">
+                <i class="fas fa-link"></i>
+            </div>
+            <div class="step-content">
+                <h4>1. Collez le lien</h4>
+                <p>Insérez l'URL de la vidéo YouTube que vous souhaitez résumer</p>
+            </div>
+        </div>
+        
+        <div class="step animate-step">
+            <div class="step-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="step-content">
+                <h4>2. Choisissez le format</h4>
+                <p>Sélectionnez le type de résumé qui vous convient</p>
+            </div>
+        </div>
+        
+        <div class="step animate-step">
+            <div class="step-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="step-content">
+                <h4>3. Obtenez votre résumé</h4>
+                <p>En quelques secondes, recevez un résumé clair de la vidéo</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const urlInput = document.getElementById('youtube_url');
+        
+        // Validation d'URL
+        urlInput.addEventListener('input', function() {
+            validateYoutubeUrl(this);
+        });
+        
+        // Validation lors de la soumission
+        form.addEventListener('submit', function(e) {
+            if (!validateYoutubeUrl(urlInput)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.classList.add('loading');
+        });
+        
+        // Fonction de validation d'URL YouTube
+        function validateYoutubeUrl(input) {
+            const pattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}.*$/;
+            const isValid = pattern.test(input.value);
+            
+            if (input.value && !isValid) {
+                input.classList.add('invalid');
+                input.parentNode.classList.add('show-error');
+                return false;
+            } else {
+                input.classList.remove('invalid');
+                input.parentNode.classList.remove('show-error');
+                return isValid;
+            }
+        }
+    });
+</script>
+{% endblock %}

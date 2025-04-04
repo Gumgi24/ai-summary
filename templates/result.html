@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block title %}Résumé de la vidéo{% endblock %}
+
+{% block content %}
+<div class="result-container animate-fade-in">
+    <div class="result-header">
+        <h2>Résumé de la vidéo</h2>
+        <a href="{{ url_for('index') }}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Nouvelle vidéo
+        </a>
+    </div>
+    
+    <div class="video-container">
+        <iframe 
+            width="560" 
+            height="315" 
+            src="https://www.youtube.com/embed/{{ video_id }}" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen
+            class="animate-scale-in">
+        </iframe>
+    </div>
+    
+    <div class="summary-container">
+        <div class="summary-header">
+            <h3>
+                {% if summary_type == 'detailed' %}
+                    <i class="fas fa-paragraph"></i> Résumé détaillé
+                {% else %}
+                    <i class="fas fa-list-ul"></i> Points clés
+                {% endif %}
+            </h3>
+            <div class="summary-actions">
+                <button class="action-btn copy-btn" title="Copier le résumé">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <a href="{{ url_for('index') }}" class="action-btn" title="Nouvelle vidéo">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="summary-content animate-slide-up">
+            {% if summary_type == 'bullet' and '<li>' not in summary %}
+                {% set bullet_points = summary.split('\n') %}
+                <ul>
+                    {% for point in bullet_points %}
+                        {% if point.strip() %}
+                            <li>{{ point.strip() }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                {{ summary|safe }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyBtn = document.querySelector('.copy-btn');
+        const summaryContent = document.querySelector('.summary-content');
+        
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                const text = summaryContent.innerText;
+                navigator.clipboard.writeText(text).then(
+                    function() {
+                        // Success
+                        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(function() {
+                            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 2000);
+                    },
+                    function() {
+                        // Error
+                        copyBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        setTimeout(function() {
+                            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 2000);
+                    }
+                );
+            });
+        }
+    });
+</script>
+{% endblock %}
